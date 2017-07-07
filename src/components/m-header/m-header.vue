@@ -6,7 +6,6 @@
 </template>
 
 <script type="text/ecmascript-6">
-	export default {}
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
@@ -15,8 +14,23 @@
 
 	.m-header
 		position relative
+		text-align center
 		height 44px
 		color $color-theme
-		font-size
-		text-align center
+		font-size 0
+		.icon
+			display inline-block
+			vertical-align top
+			margin-top 6px
+			height 32px
+			margin-right 9px
+			bg-image('logo')
+			width 30px
+			background-size 30px 32px
+		.text
+			display inline-block
+			vertical-align top
+			line-height 44px
+			font-size $font-size-large
+
 </style>
