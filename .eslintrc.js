@@ -26,6 +26,10 @@ module.exports = {
     'eol-last': 0,
     'space-before-function-paren': 0,
 	'no-tabs':0,
-	'indent':0
+	'indent':0,
+  	'no-template-curly-in-string' :0,
+  	'no-mixed-spaces-and-tabs': 0,
+  	'brace-style': 0,
+  	'no-trailing-spaces': 0
   }
 }
