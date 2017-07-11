@@ -1,7 +1,7 @@
 <template>
 	<div class="recommend">
 		<div class="recommend-content">
-			<div class="slider-wrapper">
+			<div v-if="recommends.length" class="slider-wrapper">
 				<slider>
 					<div v-for="item in recommends">
 						<a :href="item.linkUrl">
@@ -20,7 +20,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-	import {getRecommend} from 'src/api/recommend'
+	import {getRecommend, getDiscList} from 'src/api/recommend'
 	import {ERR_OK} from 'src/api/config'
 	import Slider from 'src/base/slider/slider.vue'
 
@@ -32,12 +32,20 @@
 		},
 		created() {
 			this._getRecommend()
+			this._getDiscList()
 		},
 		methods: {
 			_getRecommend() {
 				getRecommend().then((res) => {
 					if (res.code === ERR_OK) {
 						this.recommends = res.data.slider
+					}
+				})
+			},
+			_getDiscList() {
+				getDiscList().then((res) => {
+					if (res.code === ERR_OK) {
+						console.log(res.data.list)
 					}
 				})
 			}
