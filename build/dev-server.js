@@ -24,15 +24,15 @@ var app = express()
 
 var apiRouter = express.Router()
 
-apiRouter.get('/api/getDiscList', function (req, res) {
+apiRouter.get('/getDiscList', function (req, res) {
 	var url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
 
 	axios.get(url, {
 		headers: {
-			referer: 'https://c.y.qq.com/',
+			referer: 'https://y.qq.com/portal/playlist.html',
 			host: 'c.y.qq.com'
 		},
-		params:req.query
+		params: req.query
 	}).then((response) => {
 		res.json(response.data)
 	}).catch((e) => {
@@ -40,7 +40,7 @@ apiRouter.get('/api/getDiscList', function (req, res) {
 	})
 })
 
-app.use(apiRouter)
+app.use('/api', apiRouter)
 
 var compiler = webpack(webpackConfig)
 

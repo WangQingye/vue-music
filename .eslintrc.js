@@ -30,6 +30,7 @@ module.exports = {
   	'no-template-curly-in-string' :0,
   	'no-mixed-spaces-and-tabs': 0,
   	'brace-style': 0,
-  	'no-trailing-spaces': 0
+  	'no-trailing-spaces': 0,
+	'quotes': 0
   }
 }
