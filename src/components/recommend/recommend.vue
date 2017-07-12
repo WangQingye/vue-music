@@ -31,10 +31,10 @@
 </template>
 
 <script type="text/ecmascript-6">
-	import {getRecommend, getDiscList} from 'src/api/recommend'
-	import {ERR_OK} from 'src/api/config'
 	import Slider from 'src/base/slider/slider.vue'
 	import Scroll from 'src/base/scroll/scroll.vue'
+	import {getRecommend, getDiscList} from 'src/api/recommend'
+	import {ERR_OK} from 'src/api/config'
 
 	export default {
 		data() {
@@ -105,6 +105,8 @@
 						flex 0 0 60px
 						width 60px
 						padding-right 20px
+						img
+							border-radius 3px
 					.text
 						display flex
 						flex-direction column

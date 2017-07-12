@@ -39,7 +39,6 @@
 				this._setSliderWidth()
 				this._initDots()
 				this._initSlider()
-
 				if (this.autoPlay)
 				{
 					this._play()
