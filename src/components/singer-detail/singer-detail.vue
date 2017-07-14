@@ -7,7 +7,31 @@
 </template>
 
 <script type="text/ecmascript-6">
-  export default {}
+    import {mapGetters} from 'vuex'
+    import {getSingerDetail} from 'src/api/singer'
+    import {ERR_OK} from 'src/api/config'
+    export default {
+        computed: {
+            ...mapGetters([
+                'singer'
+            ])
+        },
+        created() {
+            console.log(this.singer)
+            this._getDetail()
+        },
+        methods: {
+            _getDetail()
+            {
+                getSingerDetail(this.singer.id).then((res) => {
+                    if (res.code === ERR_OK)
+                    {
+                        console.log(res.data.list)
+                    }
+                })
+            }
+        }
+    }
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
