@@ -34,12 +34,16 @@
                 {{fixedTitle}}
             </h1>
         </div>
+        <div class="loading-container" v-show="!data.length">
+            <loading></loading>
+        </div>
     </scroll>
 </template>
 
 <script type="text/ecmascript-6">
     import Scroll from 'src/base/scroll/scroll.vue'
     import {getData} from 'src/common/js/dom'
+    import Loading from 'src/base/loading/loading.vue'
     const ANCHOR_HEIGHT = 18
     const TITLT_HEIGHT = 30
 
@@ -161,7 +165,8 @@
             }
         },
         components: {
-            Scroll
+            Scroll,
+            Loading
         }
     }
 </script>
@@ -229,4 +234,9 @@
                 color $color-text-l
                 background $color-highlight-background
 
+        .loading-container
+            position absolute
+            width 100%
+            top 50%
+            transform translateY(-50%)
 </style>
