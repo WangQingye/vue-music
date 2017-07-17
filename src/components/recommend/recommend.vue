@@ -19,7 +19,7 @@
 								<img v-lazy="item.imgurl" width="60" height="60">
 							</div>
 							<div class="text">
-								<h2 class="name" v-html="item.creator.name"></h2>
+								<h2 class="name" v-html="item.author.name"></h2>
 								<p class="desc" v-html="item.dissname"></p>
 							</div>
 						</li>
@@ -61,15 +61,16 @@
 				})
 			},
 			_getDiscList() {
-			  	var res = getDiscList()
-				setTimeout(() => {
-					this.discList = res.list
-				}, 500)
-//				getDiscList().then((res) => {
-//					if (res.code === ERR_OK) {
-//						console.log(res.data.list)
-//					}
-//				})
+//			  	var res = getDiscList()
+//				setTimeout(() => {
+//					this.discList = res.list
+//				}, 500)
+				getDiscList().then((res) => {
+					if (res.code === ERR_OK) {
+                        this.discList = res.data.hotdiss.list
+						console.log(res.data.hotdiss.list)
+					}
+				})
 			},
 			loadImage() {
 			  if (!this.checkLoaded)
