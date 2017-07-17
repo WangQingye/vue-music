@@ -20,7 +20,7 @@
                 <div class="middle">
                     <div class="middle-l">
                         <div class="cd-wrapper" ref="cdWrapper">
-                            <div class="cd">
+                            <div class="cd" :class="cdCls">
                                 <img class="image" :src="currentSong.image">
                             </div>
                         </div>
@@ -35,7 +35,7 @@
                             <i class="icon-prev"></i>
                         </div>
                         <div class="icon i-center">
-                            <i class="icon-play"></i>
+                            <i @click="togglePlaying" :class="playIcon"></i>
                         </div>
                         <div class="icon i-right">
                             <i class="icon-next"></i>
@@ -50,20 +50,21 @@
         <transition name="mini">
             <div class="mini-player" v-show="!fullScreen" @click="open">
                 <div class="icon">
-                    <img width="40px" height="40px" :src="currentSong.image">
+                    <img width="40px" height="40px" :src="currentSong.image" :class="cdCls">
                 </div>
                 <div class="text">
                     <h2 class="name" v-html="currentSong.name"></h2>
                     <p class="desc" v-html="currentSong.singer"></p>
                 </div>
                 <div class="control">
-                    <i class="icon-play-mini"></i>
+                    <i @click.stop="togglePlaying" :class="miniIcon"></i>
                 </div>
                 <div class="control">
                     <i class="icon-playlist"></i>
                 </div>
             </div>
         </transition>
+        <audio :src="currentSong.url" ref="audio"></audio>
     </div>
 </template>
 
@@ -79,10 +80,27 @@
             ...mapGetters([
                 'fullScreen',
                 'playList',
-                'currentSong'
-            ])
+                'currentSong',
+                'playing'
+            ]),
+            cdCls()
+            {
+                return this.playing ? 'play' : 'play pause'
+            },
+            playIcon()
+            {
+                return this.playing ? 'icon-pause' : 'icon-play'
+            },
+            miniIcon()
+            {
+                return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
+            }
         },
         methods: {
+            togglePlaying()
+            {
+                this.setPlayingState(!this.playing)
+            },
             back()
             {
                 this.setFullScreen(false)
@@ -91,7 +109,8 @@
             {
                 this.setFullScreen(true)
             },
-            enter(el, done) {
+            enter(el, done)
+            {
                 const {x, y, scale} = this._getPosAndScale()
                 let animation = {
                     0: {
@@ -115,21 +134,25 @@
 
                 animations.runAnimation(this.$refs.cdWrapper, 'move', done)
             },
-            afterEnter() {
+            afterEnter()
+            {
                 animations.unregisterAnimation('move')
                 this.$refs.cdWrapper.style.animation = ''
             },
-            leave(el, done) {
+            leave(el, done)
+            {
                 this.$refs.cdWrapper.style.transition = 'all 0.4s'
                 const {x, y, scale} = this._getPosAndScale()
                 this.$refs.cdWrapper.style[transform] = `translate3d(${x}px, ${y}px, 0) scale(${scale})`
                 this.$refs.cdWrapper.addEventListener('transitionend', done)
             },
-            afterLeave() {
+            afterLeave()
+            {
                 this.$refs.cdWrapper.style.transition = ''
                 this.$refs.cdWrapper.style[transform] = ''
             },
-            _getPosAndScale() {
+            _getPosAndScale()
+            {
                 const targetWidth = 40
                 const paddingLeft = 40
                 // const paddingBottom = 30
@@ -145,8 +168,24 @@
                 }
             },
             ...mapMutations({
-                setFullScreen: 'SET_FULL_SCREEN'
+                setFullScreen: 'SET_FULL_SCREEN',
+                setPlayingState: 'SET_PLAYING'
             })
+        },
+        watch: {
+            currentSong()
+            {
+                this.$nextTick(() => {
+                    this.$refs.audio.play()
+                })
+            },
+            playing(newPlaying)
+            {
+                const audio = this.$refs.audio
+                this.$nextTick(() => {
+                    newPlaying ? audio.play() : audio.pause()
+                })
+            }
         }
     }
 </script>
@@ -348,6 +387,12 @@
                 flex 0 0 40px
                 width 40px
                 padding 0 10px 0 20px
+                img
+                    border-radius 50%
+                    &.play
+                        animation rotate 20s linear infinite
+                    &.pause
+                        animation-play-state paused
             .text
                 display flex
                 flex-direction column
@@ -368,7 +413,7 @@
                 flex 0 0 30px
                 width 30px
                 padding 0 10px
-                .icon-play-mini, .icon-pause.mini, .icon-playlist
+                .icon-play-mini, .icon-pause-mini, .icon-playlist
                     font-size 30px
                     color $color-theme-d
                 .icon-mini
