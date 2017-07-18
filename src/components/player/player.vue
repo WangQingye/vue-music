@@ -25,6 +25,18 @@
                             </div>
                         </div>
                     </div>
+                    <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
+                        <div class="lyric-wrapper">
+                            <div v-if="currentLyric">
+                                <p ref="lyricLine"
+                                   class="text"
+                                   v-for="(line, index) in currentLyric.lines"
+                                   :class="{'current' : currentLineNum === index}"
+                                >{{line.txt}}
+                                </p>
+                            </div>
+                        </div>
+                    </scroll>
                 </div>
                 <div class="bottom">
                     <div class="progress-wrapper">
@@ -92,6 +104,8 @@
     import {playMode} from 'src/common/js/config'
     import ProgressBar from 'src/base/progress-bar/progress-bar.vue'
     import ProgressCircle from 'src/base/progress-circle/progress-circle.vue'
+    import Lyric from 'lyric-parser'
+    import Scroll from 'src/base/scroll/scroll.vue'
 
     const transform = prefixStyle('transform')
 
@@ -100,7 +114,9 @@
             return {
                 songReady: false,
                 currentTime: 0,
-                radius: 32
+                radius: 32,
+                currentLyric: null,
+                currentLineNum: 0
             }
         },
         computed: {
@@ -241,7 +257,27 @@
             /**
              * 歌词相关
              * */
-
+            getLyric()
+            {
+                console.log('lyric')
+                this.currentSong.getLyric().then((lyric) => {
+                    this.currentLyric = new Lyric(lyric, this.handleLyric)
+                    console.log(this.currentLyric)
+                    if (this.playing) this.currentLyric.play()
+                })
+            },
+            handleLyric({lineNum, txt})
+            {
+                this.currentLineNum = lineNum
+                if (lineNum > 5)
+                {
+                    let lineEl = this.$refs.lyricLine[lineNum - 5]
+                    this.$refs.lyricList.scrollToElement(lineEl, 1000)
+                } else
+                {
+                    this.$refs.lyricList.scrollTo(0, 0, 1000)
+                }
+            },
             /*
              * 动画相关
              * */
@@ -325,7 +361,7 @@
                 if (newSong.id === oldSong.id) return
                 this.$nextTick(() => {
                     this.$refs.audio.play()
-                    this.currentSong.getLyric()
+                    this.getLyric()
                 })
             },
             playing(newPlaying)
@@ -338,7 +374,8 @@
         },
         components: {
             ProgressBar,
-            ProgressCircle
+            ProgressCircle,
+            Scroll
         }
     }
 </script>
