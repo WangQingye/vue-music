@@ -27,18 +27,27 @@
                     </div>
                 </div>
                 <div class="bottom">
+                    <div class="progress-wrapper">
+                        <span class="time time-l">{{format(currentTime)}}</span>
+                        <div class="progress-bar-wrapper">
+                            <progress-bar :percent="percent"
+                                          @percentChange="onProgressBarChange"
+                            ></progress-bar>
+                        </div>
+                        <span class="time time-r">{{format(currentSong.duration)}}</span>
+                    </div>
                     <div class="operators">
-                        <div class="icon i-left">
-                            <i class="icon-sequence"></i>
+                        <div class="icon i-left" @click="changeMode">
+                            <i :class="iconMode"></i>
                         </div>
-                        <div class="icon i-left">
-                            <i class="icon-prev"></i>
+                        <div class="icon i-left" :class="disableCls">
+                            <i @click="prev" class="icon-prev"></i>
                         </div>
-                        <div class="icon i-center">
+                        <div class="icon i-center" :class="disableCls">
                             <i @click="togglePlaying" :class="playIcon"></i>
                         </div>
-                        <div class="icon i-right">
-                            <i class="icon-next"></i>
+                        <div class="icon i-right" :class="disableCls">
+                            <i @click="next" class="icon-next"></i>
                         </div>
                         <div class="icon i-right">
                             <i class="icon icon-not-favorite"></i>
@@ -57,14 +66,21 @@
                     <p class="desc" v-html="currentSong.singer"></p>
                 </div>
                 <div class="control">
-                    <i @click.stop="togglePlaying" :class="miniIcon"></i>
+                    <progress-circle :radius="radius" :percent="percent">
+                        <i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon" ></i>
+                    </progress-circle>
                 </div>
                 <div class="control">
                     <i class="icon-playlist"></i>
                 </div>
             </div>
         </transition>
-        <audio :src="currentSong.url" ref="audio"></audio>
+        <audio :src="currentSong.url" ref="audio"
+               @canplay="ready"
+               @error="error"
+               @timeupdate="updateTime"
+               @ended="end"
+        ></audio>
     </div>
 </template>
 
@@ -72,20 +88,38 @@
     import {mapGetters, mapMutations} from 'vuex'
     import animations from 'create-keyframe-animation'
     import {prefixStyle} from 'src/common/js/dom'
+    import {shuffle} from 'src/common/js/util'
+    import {playMode} from 'src/common/js/config'
+    import ProgressBar from 'src/base/progress-bar/progress-bar.vue'
+    import ProgressCircle from 'src/base/progress-circle/progress-circle.vue'
 
     const transform = prefixStyle('transform')
 
     export default {
+        data() {
+            return {
+                songReady: false,
+                currentTime: 0,
+                radius: 32
+            }
+        },
         computed: {
             ...mapGetters([
                 'fullScreen',
                 'playList',
                 'currentSong',
-                'playing'
+                'playing',
+                'currentIndex',
+                'mode',
+                'sequenceList'
             ]),
             cdCls()
             {
                 return this.playing ? 'play' : 'play pause'
+            },
+            iconMode()
+            {
+                return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random '
             },
             playIcon()
             {
@@ -94,13 +128,114 @@
             miniIcon()
             {
                 return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
+            },
+            disableCls()
+            {
+                return this.songReady ? '' : 'disable'
+            },
+            percent() {
+                return this.currentTime / this.currentSong.duration
             }
         },
         methods: {
+            /*
+            * 进度条相关
+            * */
+            updateTime(e)
+            {
+                this.currentTime = e.target.currentTime
+            },
+            format(interval)
+            {
+                interval = interval | 0 // 或0等于向下取整
+                const minute = interval / 60 | 0
+                const second = interval % 60
+                if (second < 10) return `${minute}:0${second}`
+                return `${minute}:${second}`
+            },
+            onProgressBarChange(newPercent)
+            {
+                this.$refs.audio.currentTime = this.currentSong.duration * newPercent
+                if (!this.playing) this.togglePlaying()
+            },
+            /*
+            * 播放控制相关
+            * */
             togglePlaying()
             {
                 this.setPlayingState(!this.playing)
             },
+            // 下一曲
+            next()
+            {
+                if (!this.songReady) return
+                let index = this.currentIndex + 1
+                if (index === this.playList.length) index = 0
+                this.setCurrentIndex(index)
+                if (!this.playing) this.togglePlaying()
+                this.songReady = false
+            },
+            // 上一曲
+            prev()
+            {
+                if (!this.songReady) return
+                let index = this.currentIndex - 1
+                if (index === -1) index = this.playList.length
+                this.setCurrentIndex(index)
+                if (!this.playing) this.togglePlaying()
+                this.songReady = false
+            },
+            // 音频准备完毕(防止过快点击)
+            ready()
+            {
+                this.songReady = true
+            },
+            // 音频错误(当链接出问题，依然要可以点击下一曲)
+            error()
+            {
+                this.songReady = true
+            },
+            // 一曲结束，切换下一曲
+            end()
+            {
+                if (this.mode === playMode.loop)
+                {
+                    this.loop()
+                } else
+                {
+                    this.next()
+                }
+            },
+            // 单曲循环
+            loop()
+            {
+                this.$refs.audio.currentTime = 0
+                this.$refs.audio.play()
+            },
+            // 改变播放方式
+            changeMode()
+            {
+                const mode = (this.mode + 1) % 3
+                this.setPlayMode(mode)
+                let list = null
+                if (mode === playMode.random)
+                {
+                    list = shuffle(this.sequenceList)
+                } else
+                {
+                    list = this.sequenceList
+                }
+                this.resetCurrentIndex(list)
+                this.setSequenceList(list)
+            },
+            resetCurrentIndex(list)
+            {
+                let index = list.indexOf(this.currentSong)
+                this.setCurrentIndex(index)
+            },
+            /*
+             * 动画相关
+             * */
             back()
             {
                 this.setFullScreen(false)
@@ -169,12 +304,16 @@
             },
             ...mapMutations({
                 setFullScreen: 'SET_FULL_SCREEN',
-                setPlayingState: 'SET_PLAYING'
+                setPlayingState: 'SET_PLAYING',
+                setCurrentIndex: 'SET_CURRENT_INDEX',
+                setPlayMode: 'SET_PLAY_MODE',
+                setSequenceList: 'SET_SEQUENCE_LIST'
             })
         },
         watch: {
-            currentSong()
+            currentSong(newSong, oldSong)
             {
+                if (newSong === oldSong) return
                 this.$nextTick(() => {
                     this.$refs.audio.play()
                 })
@@ -186,6 +325,10 @@
                     newPlaying ? audio.play() : audio.pause()
                 })
             }
+        },
+        components: {
+            ProgressBar,
+            ProgressCircle
         }
     }
 </script>
