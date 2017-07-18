@@ -8,7 +8,16 @@ import {shuffle} from 'src/common/js/util'
 
 export const selectPlay = function ({commit, state}, {list, index}) {
     commit(types.SET_SEQUENCE_LIST, list)
-    commit(types.SET_PLAY_LIST, list)
+    // 随机的时候列表已经变了
+    if (state.mode === playMode.random)
+    {
+        let randomList = shuffle(list)
+        commit(types.SET_PLAY_LIST, randomList)
+        index = randomList.indexOf(list[index])
+    } else
+    {
+        commit(types.SET_PLAY_LIST, list)
+    }
     commit(types.SET_CURRENT_INDEX, index)
     commit(types.SET_FULL_SCREEN, true)
     commit(types.SET_PLAYING, true)
