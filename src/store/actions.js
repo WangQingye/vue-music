@@ -13,7 +13,9 @@ export const selectPlay = function ({commit, state}, {list, index}) {
     {
         let randomList = shuffle(list)
         commit(types.SET_PLAY_LIST, randomList)
-        index = randomList.indexOf(list[index])
+        index = randomList.findIndex((item) => {
+        return item.id === this.currentSong.id
+        })
     } else
     {
         commit(types.SET_PLAY_LIST, list)

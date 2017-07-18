@@ -2,6 +2,10 @@
  * Created by wqy on 2017/7/16.
  */
 
+import {getLyric} from 'src/api/song'
+import {ERR_OK} from 'src/api/config'
+import {Base64} from 'js-base64'
+
 export default class Song
 {
     constructor ({id, mid, singer, name, album, duration, image, url})
@@ -14,6 +18,22 @@ export default class Song
         this.duration = duration
         this.image = image
         this.url = url
+    }
+
+    getLyric()
+    {
+        // 这首歌已经请求过了就不用再次请求了
+        if (this.lyric)
+        {
+            return Promise.resolve(this.lyric)
+        }
+        getLyric(this.mid).then((res) => {
+            if (res.retcode === ERR_OK)
+            {
+                this.lyric = Base64.decode(res.lyric)
+                console.log(this.lyric)
+            }
+        })
     }
 }
 

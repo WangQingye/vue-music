@@ -225,14 +225,23 @@
                 {
                     list = this.sequenceList
                 }
+                console.log(this.currentSong.name)
                 this.resetCurrentIndex(list)
                 this.setSequenceList(list)
+                console.log(this.currentSong.name)
             },
             resetCurrentIndex(list)
             {
-                let index = list.indexOf(this.currentSong)
+                let index = list.findIndex((item) => {
+                    return item.name === this.currentSong.name
+                })
+                console.log('list', list[index].name)
                 this.setCurrentIndex(index)
             },
+            /**
+             * 歌词相关
+             * */
+
             /*
              * 动画相关
              * */
@@ -313,9 +322,10 @@
         watch: {
             currentSong(newSong, oldSong)
             {
-                if (newSong === oldSong) return
+                if (newSong.id === oldSong.id) return
                 this.$nextTick(() => {
                     this.$refs.audio.play()
+                    this.currentSong.getLyric()
                 })
             },
             playing(newPlaying)
