@@ -76,7 +76,7 @@
             </div>
         </transition>
         <transition name="mini">
-            <div class="mini-player" v-show="!fullScreen" @click="open">
+            <div class="mini-player" v-show="!fullScreen&&playList.length" @click="open">
                 <div class="icon">
                     <img width="40px" height="40px" :src="currentSong.image" :class="cdCls">
                 </div>

@@ -2,7 +2,7 @@
  * Created by wqy on 2017/7/14.
  */
 export const singer = state => state.singer
-
+export const disc = state => state.disc
 export const playing = state => state.playing
 export const fullScreen = state => state.fullScreen
 export const playList = state => state.playList

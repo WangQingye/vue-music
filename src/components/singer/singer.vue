@@ -1,6 +1,6 @@
 <template>
-	<div class="singer">
-        <list-view @select="selectSinger" :data="singers"></list-view>
+	<div class="singer" ref="singer">
+        <list-view @select="selectSinger" :data="singers" ref="list"></list-view>
         <router-view></router-view>
 	</div>
 </template>
@@ -11,9 +11,12 @@
     import Singer from 'src/common/js/singer'
     import ListView from 'src/base/listview/listview.vue'
     import {mapMutations} from 'vuex'
+    import {playListMixin} from 'src/common/js/mixin'
+
 	const HOT_NAME = '热门'
 	const HOT_LENGTH = 10
     export default {
+        mixins: [playListMixin],
 		data() {
 		  	return {
 				singers: []
@@ -23,6 +26,13 @@
 		    this._getSingerList()
 		},
 		methods: {
+            // 因为有下部小播放器所以需要调整滚动框底部的位置
+            handlePlayList(playList)
+            {
+                const bottom = playList.length > 0 ? '60px' : 0
+                this.$refs.singer.style.bottom = bottom
+                this.$refs.list.refresh()
+            },
 		    selectSinger(singer)
             {
                 this.$router.push({

@@ -1,5 +1,5 @@
 <template>
-	<div class="recommend">
+	<div class="recommend" ref="recommend">
 		<scroll ref="scroll" class="recommend-content" :data="discList">
 			<div>
 				<div v-if="recommends.length" class="slider-wrapper">
@@ -14,7 +14,7 @@
 				<div class="recommend-list">
 					<h1 class="list-title">热门歌单推荐</h1>
 					<ul>
-						<li v-for="item in discList" class="item">
+						<li @click="selectItem(item)" v-for="item in discList" class="item">
 							<div class="icon">
 								<img v-lazy="item.imgurl" width="60" height="60">
 							</div>
@@ -26,10 +26,11 @@
 					</ul>
 				</div>
 			</div>
+            <div class="loading-container" v-show="!discList.length">
+                <loading></loading>
+            </div>
 		</scroll>
-        <div class="loading-container" v-show="!discList.length">
-            <loading></loading>
-        </div>
+        <router-view></router-view>
 	</div>
 </template>
 
@@ -39,8 +40,11 @@
 	import Loading from 'src/base/loading/loading.vue'
 	import {getRecommend, getDiscList} from 'src/api/recommend'
 	import {ERR_OK} from 'src/api/config'
+    import {playListMixin} from 'src/common/js/mixin'
+    import {mapMutations} from 'vuex'
 
 	export default {
+        mixins: [playListMixin],
 		data() {
 			return {
 				recommends: [],
@@ -52,6 +56,13 @@
 			this._getDiscList()
 		},
 		methods: {
+            // 因为有下部小播放器所以需要调整滚动框底部的位置
+            handlePlayList(playList)
+            {
+                const bottom = playList.length > 0 ? '60px' : 0
+                this.$refs.recommend.style.bottom = bottom
+                this.$refs.scroll.refresh()
+            },
 			_getRecommend() {
 				getRecommend().then((res) => {
 					if (res.code === ERR_OK) {
@@ -61,24 +72,31 @@
 				})
 			},
 			_getDiscList() {
-//			  	var res = getDiscList()
-//				setTimeout(() => {
-//					this.discList = res.list
-//				}, 500)
 				getDiscList().then((res) => {
 					if (res.code === ERR_OK) {
                         this.discList = res.data.hotdiss.list
-						console.log(res.data.hotdiss.list)
+                        this.$refs.scroll.refresh()
 					}
 				})
 			},
+            selectItem(item)
+            {
+                console.log(item)
+                this.$router.push({
+                    path: `/recommend/${item.dissid}`
+                })
+                this.setDisc(item)
+            },
 			loadImage() {
 			  if (!this.checkLoaded)
 			  {
 				  // this.$refs.scroll.refresh()
 				  this.checkLoaded = true
 			  }
-			}
+			},
+            ...mapMutations({
+                setDisc: 'SET_DISC'
+            })
 		},
 		components: {
 			Slider,

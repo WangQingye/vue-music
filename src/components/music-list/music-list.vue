@@ -31,12 +31,14 @@
     import Loading from 'src/base/loading/loading.vue'
     import {prefixStyle} from 'src/common/js/dom'
     import {mapActions} from 'vuex'
+    import {playListMixin} from 'src/common/js/mixin'
 
     const REVERSE_HEIGHT = 40
     const transform = prefixStyle('transform')
     const backdrop = prefixStyle('backdrop-filter')
 
     export default {
+        mixins: [playListMixin],
         props: {
             bgImage: {
                 type: String,
@@ -71,6 +73,13 @@
             this.$refs.list.$el.style.top = `${this.$refs.bgImage.clientHeight}px`
         },
         methods: {
+            // 因为有下部小播放器所以需要调整滚动框底部的位置
+            handlePlayList(playList)
+            {
+                const bottom = playList.length > 0 ? '60px' : 0
+                this.$refs.list.$el.style.bottom = bottom
+                this.$refs.list.refresh()
+            },
             scroll(pos)
             {
                 this.scrollY = pos.y
