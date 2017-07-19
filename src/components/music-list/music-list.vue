@@ -59,6 +59,7 @@
             }
         },
         created() {
+            console.log('123')
             this.probeType = 3
             this.listenScroll = true
         },

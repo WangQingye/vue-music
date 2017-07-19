@@ -24,13 +24,13 @@ var app = express()
 
 var apiRouter = express.Router()
 
-apiRouter.get('/getDiscList', function (req, res) {
-	var url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
+apiRouter.get('/getTopList', function (req, res) {
+	var url = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_cp.fcg'
 
 	axios.get(url, {
 		headers: {
-			referer: 'https://y.qq.com/portal/playlist.html',
-			host: 'c.y.qq.com'
+			referer: 'https://y.qq.com/w/toplist.html?ADTAG=newyqq.toplist&type=0&id=4',
+			host: 'y.qq.com'
 		},
 		params: req.query
 	}).then((response) => {

@@ -28,7 +28,7 @@
                             </div>
                         </div>
                     </div>
-                    <scroll class="middle-r" style="background-color: red" ref="lyricList" :data="currentLyric && currentLyric.lines">
+                    <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
                         <div class="lyric-wrapper">
                             <div v-if="currentLyric">
                                 <p ref="lyricLine"
