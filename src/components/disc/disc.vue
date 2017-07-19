@@ -10,7 +10,8 @@
 <script type="text/ecmascript-6">
     import {mapGetters} from 'vuex'
     import {getSongList} from 'src/api/recommend'
-    import {ERR_OK} from 'src/api/config'
+    import {createSong} from 'src/common/js/song'
+    // import {ERR_OK} from 'src/api/config'
     import MusicList from 'src/components/music-list/music-list.vue'
     export default {
         data() {
@@ -38,25 +39,25 @@
                     this.$router.push('/recommend')
                     return
                 }
-                getSongList(this.disc.dissid).then((res) => {
-                    if (res.code === ERR_OK) {
-                        console.log(res.cdlist[0].songlist)
-                        // this.songs = this._normalizeSongs(res.cdlist[0].songlist)
-                    }
-                })
-            }
-//            _normalizeSongs(list)
-//            {
-//                let ret = []
-//                list.forEach((item) => {
-//                    let {musicData} = item
-//                    if (musicData.songid && musicData.albumid)
-//                    {
-//                        ret.push(createSong(musicData))
+                this.songs = this._normalizeSongs(getSongList(this.disc.dissid).cdlist[0].songlist)
+//                getSongList(this.disc.dissid).then((res) => {
+//                    if (res.code === ERR_OK) {
+//                        console.log(res.cdlist[0].songlist)
+//                        // this.songs = this._normalizeSongs(res.cdlist[0].songlist)
 //                    }
 //                })
-//                return ret
-//            }
+            },
+            _normalizeSongs(list)
+            {
+                let ret = []
+                list.forEach((musicData) => {
+                    if (musicData.songid && musicData.albumid)
+                    {
+                        ret.push(createSong(musicData))
+                    }
+                })
+                return ret
+            }
         },
         components: {
             MusicList
