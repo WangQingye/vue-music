@@ -3,10 +3,10 @@
         <ul class="suggest-list">
             <li class="suggest-item" v-for="item in result">
                 <div class="icon">
-                    <i></i>
+                    <i :class="getIconCls(item)"></i>
                 </div>
                 <div class="name">
-                    <p class="text"></p>
+                    <p class="text" v-html="getDisplayName(item)"></p>
                 </div>
             </li>
         </ul>
@@ -16,6 +16,7 @@
 <script type="text/ecmascript-6">
     import {search} from 'src/api/search'
     import {ERR_OK} from 'src/api/config'
+    import {filterSinger} from 'src/common/js/song'
 
     const TYPE_SINGER = 'singer'
 
@@ -60,6 +61,26 @@
                     ret = ret.concat(data.song.list)
                 }
                 return ret
+            },
+            getIconCls(item)
+            {
+                if (item.type === TYPE_SINGER)
+                {
+                    return 'icon-mine'
+                } else
+                {
+                    return 'icon-music'
+                }
+            },
+            getDisplayName(item)
+            {
+                if (item.type === TYPE_SINGER)
+                {
+                    return item.singername
+                } else
+                {
+                    return `${item.songname}-${filterSinger(item.singer)}`
+                }
             }
         },
         watch: {

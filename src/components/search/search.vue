@@ -1,9 +1,9 @@
 <template>
 	<div class="search">
 		<div class="search-box-wrapper">
-            <search-box ref="searchBox"></search-box>
+            <search-box ref="searchBox" @query="onQueryChange"></search-box>
         </div>
-        <div class="shortcut-wrapper">
+        <div class="shortcut-wrapper" v-show="!query">
             <div class="shortcut">
                 <div class="hot-key">
                     <h1 class="title"></h1>
@@ -15,6 +15,9 @@
                 </div>
             </div>
         </div>
+        <div class="search-result" v-show="query">
+            <suggest :query="query"></suggest>
+        </div>
 	</div>
 </template>
 
@@ -22,6 +25,8 @@
     import SearchBox from 'src/base/search-box/search-box.vue'
     import {getHotKey} from 'src/api/search'
     import {ERR_OK} from 'src/api/config'
+    import Suggest from 'src/components/suggest/suggest.vue'
+
     export default {
         created()
         {
@@ -30,7 +35,8 @@
         data()
         {
             return {
-                hotKey: []
+                hotKey: [],
+                query: ''
             }
         },
         methods:
@@ -47,10 +53,15 @@
             addQuery(query)
             {
                 this.$refs.searchBox.setQuery(query)
+            },
+            onQueryChange(query)
+            {
+                this.query = query
             }
         },
         components: {
-            SearchBox
+            SearchBox,
+            Suggest
         }
     }
 </script>
@@ -84,4 +95,9 @@
                     background $color-highlight-background
                     font-size $font-size-medium
                     color $color-text-d
+        .search-result
+            position fixed
+            width 100%
+            top 178px
+            bottom 0
 </style>
