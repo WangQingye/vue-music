@@ -1,14 +1,14 @@
 <template>
-	<div class="rank" ref="rank">
-        <scroll class="toplist" ref="toplist" :data="topList">
+    <div class="rank" ref="rank">
+        <scroll :data="topList" class="toplist" ref="toplist">
             <ul>
-                <li class="item" v-for="item in topList" @click="selectItem(item)">
+                <li @click="selectItem(item)" class="item" v-for="item in topList">
                     <div class="icon">
-                        <img width="100" height="100" v-lazy="item.picUrl" alt="">
+                        <img width="100" height="100" v-lazy="item.picUrl"/>
                     </div>
                     <ul class="songlist">
-                        <li class="song" v-for="(song, index) in item.songList">
-                            <span>{{index + 1}}.</span>
+                        <li class="song" v-for="(song,index) in item.songList">
+                            <span>{{index + 1}}</span>
                             <span>{{song.songname}}-{{song.singername}}</span>
                         </li>
                     </ul>
@@ -18,58 +18,60 @@
                 <loading></loading>
             </div>
         </scroll>
-	</div>
+        <router-view></router-view>
+    </div>
 </template>
 
 <script type="text/ecmascript-6">
+    import Scroll from 'src/base/scroll/scroll'
+    import Loading from 'src/base/loading/loading'
     import {getTopList} from 'src/api/rank'
     import {ERR_OK} from 'src/api/config'
-    import Scroll from 'src/base/scroll/scroll.vue'
-    import Loading from 'src/base/loading/loading.vue'
     import {playListMixin} from 'src/common/js/mixin'
     import {mapMutations} from 'vuex'
 
     export default {
         mixins: [playListMixin],
+        created() {
+            this._getTopList()
+        },
         data() {
             return {
                 topList: []
             }
         },
-        created()
-        {
-            this._getTopList()
-        },
         methods: {
-            // 因为有下部小播放器所以需要调整滚动框底部的位置
-            handlePlayList(playList)
-            {
-                const bottom = playList.length > 0 ? '60px' : 0
+            handlePlayList(playlist) {
+                const bottom = playlist.length > 0 ? '60px' : ''
+
                 this.$refs.rank.style.bottom = bottom
                 this.$refs.toplist.refresh()
-            },
-            _getTopList()
-            {
-                getTopList().then((res) => {
-                    if (res.code === ERR_OK)
-                    {
-                        this.topList = res.data.topList
-                    }
-                })
             },
             selectItem(item) {
                 this.$router.push({
                     path: `/rank/${item.id}`
                 })
-                console.log(item.id)
                 this.setTopList(item)
+            },
+            _getTopList() {
+                getTopList().then((res) => {
+                    if (res.code === ERR_OK) {
+                        this.topList = res.data.topList
+                    }
+                })
             },
             ...mapMutations({
                 setTopList: 'SET_TOP_LIST'
             })
         },
-        components:
-        {
+        watch: {
+            topList() {
+                setTimeout(() => {
+                    this.$Lazyload.lazyLoadHandler()
+                }, 20)
+            }
+        },
+        components: {
             Scroll,
             Loading
         }
@@ -77,45 +79,45 @@
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
-    @import "~common/stylus/variable.styl"
-    @import "~common/stylus/mixin.styl"
+    @import "~common/stylus/variable"
+    @import "~common/stylus/mixin"
 
     .rank
-        position fixed
-        width 100%
-        top 88px
-        bottom 0
+        position: fixed
+        width: 100%
+        top: 88px
+        bottom: 0
         .toplist
-            height 100%
-            overflow hidden
+            height: 100%
+            overflow: hidden
             .item
-                display flex
-                margin 0 20px
-                padding-top 20px
-                height 100px
+                display: flex
+                margin: 0 20px
+                padding-top: 20px
+                height: 100px
                 &:last-child
-                    padding-bottom 20px
+                    padding-bottom: 20px
                 .icon
-                    flex 0 0 100px
-                    width 100px
-                    height 100px
+                    flex: 0 0 100px
+                    width: 100px
+                    height: 100px
                 .songlist
-                    flex 1
-                    display flex
-                    flex-direction column
-                    justify-content center
-                    padding 0 20px
-                    height 100px
-                    overflow hidden
-                    background $color-highlight-background
-                    color $color-text-d
-                    font-size $font-size-small
+                    flex: 1
+                    display: flex
+                    flex-direction: column
+                    justify-content: center
+                    padding: 0 20px
+                    height: 100px
+                    overflow: hidden
+                    background: $color-highlight-background
+                    color: $color-text-d
+                    font-size: $font-size-small
                     .song
                         no-wrap()
-                        line-height 26px
+                        line-height: 26px
             .loading-container
-                position absolute
-                width 100%
-                top 50%
-                transform translateY(-50%)
+                position: absolute
+                width: 100%
+                top: 50%
+                transform: translateY(-50%)
 </style>
