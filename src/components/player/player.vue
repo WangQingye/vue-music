@@ -305,7 +305,7 @@
                     list = shuffle(this.sequenceList)
                 } else
                 {
-                    list = this.sequenceList
+                    list = this.playList
                 }
                 console.log(this.currentSong.name)
                 this.resetCurrentIndex(list)
