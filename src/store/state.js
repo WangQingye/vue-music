@@ -3,6 +3,7 @@
  */
 
 import {playMode} from 'src/common/js/config'
+import {loadSearch} from 'src/common/js/cache'
 
 const state = {
     singer: {},
@@ -13,7 +14,8 @@ const state = {
     mode: playMode.sequence,
     currentIndex: -1,
     disc: {},
-    topList: {}
+    topList: {},
+    searchHistory: loadSearch()
 }
 
 export default state

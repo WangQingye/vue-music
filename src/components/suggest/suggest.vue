@@ -3,6 +3,8 @@
             :data="result"
             :pullup="pullup"
             @scrollToEnd="searchMore"
+            :beforeScroll="beforeScroll"
+            @beforeScroll="listScroll"
             ref="suggest"
     >
         <ul class="suggest-list">
@@ -16,6 +18,9 @@
             </li>
             <loading v-show="hasMore" title=""></loading>
         </ul>
+        <div v-show="!hasMore && !result.length" class="no-result-wrapper">
+            <no-result title="抱歉，暂无搜索结果"></no-result>
+        </div>
     </scroll>
 </template>
 
@@ -25,6 +30,7 @@
     import {createSong} from 'src/common/js/song'
     import Scroll from 'src/base/scroll/scroll.vue'
     import Loading from 'src/base/loading/loading.vue'
+    import NoResult from 'src/base/no-result/no-result.vue'
     import Singer from 'src/common/js/singer'
     import {mapMutations, mapActions} from 'vuex'
 
@@ -48,6 +54,7 @@
                 page: 1,
                 result: [],
                 pullup: true,
+                beforeScroll: true,
                 hasMore: true
             }
         },
@@ -100,7 +107,6 @@
                 {
                     ret = ret.concat(this._normalizeSong(data.song.list))
                 }
-                console.log(ret)
                 return ret
             },
             _normalizeSong(list)
@@ -153,6 +159,15 @@
                 {
                     this.insertSong(item)
                 }
+                this.$emit('select')
+            },
+            listScroll()
+            {
+                this.$emit('listScroll')
+            },
+            refresh()
+            {
+                this.$refs.suggest.refresh()
             },
             ...mapMutations({
                 setSinger: 'SET_SINGER'
@@ -169,7 +184,8 @@
         },
         components: {
             Scroll,
-            Loading
+            Loading,
+            NoResult
         }
     }
 </script>
@@ -200,9 +216,9 @@
                 overflow hidden
                 .text
                     no-wrap()
-            .no-result-wrapper
-                position absolute
-                width 100%
-                top 50%
-                transform: translateY(-50%)
+        .no-result-wrapper
+            position absolute
+            width 100%
+            top 50%
+            transform: translateY(-50%)
 </style>

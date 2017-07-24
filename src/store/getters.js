@@ -13,3 +13,4 @@ export const currentIndex = state => state.currentIndex
 export const currentSong = (state) => {
     return state.sequenceList[state.currentIndex] || {}
 }
+export const searchHistory = state => state.searchHistory
