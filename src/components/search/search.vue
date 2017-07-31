@@ -17,7 +17,7 @@
                     <div class="search-history" v-show="searchHistory.length">
                         <h1 class="title">
                             <span class="text">搜索历史</span>
-                            <span @click="clearSearchHistory" class="clear">
+                            <span @click="showConfirm" class="clear">
                                 <i class="icon-clear"></i>
                             </span>
                         </h1>
@@ -31,6 +31,7 @@
         <div ref="searchResult" class="search-result" v-show="query">
             <suggest ref="suggest" @select="saveSearch" @listScroll="blurInput" :query="query"></suggest>
         </div>
+        <confirm @confirm="clearSearchHistory" ref="confirm" text="是否清空所有搜索历史" confirmBtnText="清空"></confirm>
         <router-view></router-view>
 	</div>
 </template>
@@ -41,6 +42,7 @@
     import {ERR_OK} from 'src/api/config'
     import Suggest from 'src/components/suggest/suggest.vue'
     import Scroll from 'src/base/scroll/scroll.vue'
+    import Confirm from 'src/base/confirm/confirm.vue'
     import SearchList from 'src/base/search-list/search-list.vue'
     import {mapActions, mapGetters} from 'vuex'
     import {playListMixin} from 'src/common/js/mixin'
@@ -99,6 +101,10 @@
             {
                 this.saveSearchHistory(this.query)
             },
+            showConfirm()
+            {
+                this.$refs.confirm.show()
+            },
             blurInput()
             {
                 this.$refs.searchBox.blur()
@@ -113,7 +119,8 @@
             SearchBox,
             Suggest,
             SearchList,
-            Scroll
+            Scroll,
+            Confirm
         }
     }
 </script>
