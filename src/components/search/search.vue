@@ -115,6 +115,17 @@
                 'clearSearchHistory'
             ])
         },
+        watch: {
+            query(newQuery)
+            {
+                if (!newQuery)
+                {
+                    setTimeout(() => {
+                        this.$refs.shortcut.refresh()
+                    }, 20)
+                }
+            }
+        },
         components: {
             SearchBox,
             Suggest,
