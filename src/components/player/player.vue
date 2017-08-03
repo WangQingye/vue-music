@@ -94,6 +94,7 @@
                 </div>
             </div>
         </transition>
+        <playlist></playlist>
         <audio :src="currentSong.url" ref="audio"
                @canplay="ready"
                @error="error"
@@ -113,6 +114,7 @@
     import ProgressCircle from 'src/base/progress-circle/progress-circle.vue'
     import Lyric from 'lyric-parser'
     import Scroll from 'src/base/scroll/scroll.vue'
+    import Playlist from 'src/components/playlist/playlist.vue'
 
     const transform = prefixStyle('transform')
     const transitionDuration = prefixStyle('transitionDuration')
@@ -441,7 +443,8 @@
         components: {
             ProgressBar,
             ProgressCircle,
-            Scroll
+            Scroll,
+            Playlist
         }
     }
 </script>

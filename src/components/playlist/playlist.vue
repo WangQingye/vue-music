@@ -24,7 +24,7 @@
                 <div class="list-operate">
                     <div class="add">
                         <i class="icon-add"></i>
-                        <spn class="text"></spn>
+                        <span class="text"></span>
                     </div>
                 </div>
                 <div class="list-close">
@@ -54,7 +54,7 @@
             transition opacity 0.3s
             .list-wrapper
                 transition all 0.3s
-        &.list-fade-enter, &.list-fade-leave-top
+        &.list-fade-enter, &.list-fade-leave-to
             opacity 0
             .list-wrapper
                 transfrom translate3d(0, 100%, 0)
