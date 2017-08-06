@@ -24,7 +24,7 @@
                 <div class="list-operate">
                     <div class="add">
                         <i class="icon-add"></i>
-                        <span class="text">添加歌曲到队列</span>
+                        <span @click.stop="addSong" class="text">添加歌曲到队列</span>
                     </div>
                 </div>
                 <div class="list-close" @click="hide">
@@ -32,6 +32,7 @@
                 </div>
             </div>
             <confirm ref="confirm" @confirm="confirmClear" text="是否清空播放列表" confirmBtnText="清空"></confirm>
+            <add-song ref="addSong"></add-song>
         </div>
     </transition>
 </template>
@@ -40,6 +41,7 @@
     import {mapActions} from 'vuex'
     import {playMode} from 'src/common/js/config'
     import Scroll from 'src/base/scroll/scroll.vue'
+    import AddSong from 'src/components/add-song/add-song.vue'
     import Confirm from 'src/base/confirm/confirm.vue'
     import {playerMixin} from 'src/common/js/mixin'
 
@@ -114,6 +116,10 @@
                 this.deleteSongList()
                 this.hide()
             },
+            addSong()
+            {
+                this.$refs.addSong.show()
+            },
             ...mapActions([
                 'deleteSong',
                 'deleteSongList'
@@ -132,6 +138,7 @@
         },
         components: {
             Scroll,
+            AddSong,
             Confirm
         }
     }

@@ -1,7 +1,7 @@
 /**
  * Created by wqy on 2017/7/19.
  */
-import {mapGetters, mapMutations} from 'vuex'
+import {mapGetters, mapMutations, mapActions} from 'vuex'
 import {playMode} from 'src/common/js/config'
 import {shuffle} from 'src/common/js/util'
 
@@ -83,5 +83,41 @@ export const playerMixin = {
             setPlayMode: 'SET_PLAY_MODE',
             setSequenceList: 'SET_SEQUENCE_LIST'
         })
+    }
+}
+
+// 搜索相关公用
+export const searchMixin = {
+    data() {
+        return {
+            query: ''
+        }
+    },
+    computed: {
+        ...mapGetters([
+            'searchHistory'
+        ])
+    },
+    methods: {
+        saveSearch()
+        {
+            this.saveSearchHistory(this.query)
+        },
+        blurInput()
+        {
+            this.$refs.searchBox.blur()
+        },
+        onQueryChange(query)
+        {
+            this.query = query
+        },
+        addQuery(query)
+        {
+            this.$refs.searchBox.setQuery(query)
+        },
+        ...mapActions([
+            'saveSearchHistory',
+            'deleteSearchHistory'
+        ])
     }
 }
