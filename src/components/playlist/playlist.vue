@@ -4,8 +4,8 @@
             <div class="list-wrapper" @click.stop>
                 <div class="list-header">
                     <h1 class="title">
-                        <i class="icon"></i>
-                        <span class="text"></span>
+                        <i @click="changeMode" class="icon" :class="iconMode"></i>
+                        <span class="text" v-html="modeText"></span>
                         <span class="clear" @click="showConfirm"><i class="icon-clear"></i></span>
                     </h1>
                 </div>
@@ -37,16 +37,24 @@
 </template>
 
 <script type="text/ecmascript-6">
-    import {mapGetters, mapMutations, mapActions} from 'vuex'
+    import {mapActions} from 'vuex'
     import {playMode} from 'src/common/js/config'
     import Scroll from 'src/base/scroll/scroll.vue'
     import Confirm from 'src/base/confirm/confirm.vue'
+    import {playerMixin} from 'src/common/js/mixin'
 
     export default
     {
+        mixins: [playerMixin],
+
         data() {
             return {
                 showFlag: false
+            }
+        },
+        computed: {
+            modeText() {
+                return this.mode === playMode.sequence ? '顺序播放' : this.mode === playMode.random ? '随机播放' : '单曲循环'
             }
         },
         methods: {
@@ -72,7 +80,6 @@
             },
             selectItem(item, index)
             {
-                console.log('mode', this.mode)
                 if (this.mode === playMode.random)
                 {
                     index = this.sequenceList.findIndex((song) => {
@@ -84,10 +91,10 @@
             },
             scrollToCurrent(current)
             {
-                console.log('das')
                 let index = this.sequenceList.findIndex((song) => {
                     return current.id === song.id
                 })
+                console.log(current.name)
                 this.$refs.listContent.scrollToElement(this.$refs.listItem[index])
             },
             deleteOne(item)
@@ -107,11 +114,6 @@
                 this.deleteSongList()
                 this.hide()
             },
-            ...mapMutations(
-            {
-                'setCurrentIndex': 'SET_CURRENT_INDEX',
-                'setPlayingState': 'SET_PLAYING'
-            }),
             ...mapActions([
                 'deleteSong',
                 'deleteSongList'
@@ -127,14 +129,6 @@
                     }, 20)
                 }
             }
-        },
-        computed: {
-            ...mapGetters([
-                'sequenceList',
-                'currentSong',
-                'playList',
-                'mode'
-            ])
         },
         components: {
             Scroll,
