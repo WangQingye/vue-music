@@ -89,12 +89,12 @@
                         <i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon" ></i>
                     </progress-circle>
                 </div>
-                <div class="control">
+                <div class="control" @click.stop="showPlayList">
                     <i class="icon-playlist"></i>
                 </div>
             </div>
         </transition>
-        <playlist></playlist>
+        <playlist ref="playList"></playlist>
         <audio :src="currentSong.url" ref="audio"
                @canplay="ready"
                @error="error"
@@ -322,6 +322,10 @@
                 console.log('list', list[index].name)
                 this.setCurrentIndex(index)
             },
+            showPlayList()
+            {
+                this.$refs.playList.show()
+            },
             /**
              * 歌词相关
              * */
@@ -426,7 +430,7 @@
         watch: {
             currentSong(newSong, oldSong)
             {
-                if (newSong.id === oldSong.id) return
+                if (!newSong.id || newSong.id === oldSong.id) return
                 this.$nextTick(() => {
                     this.$refs.audio.play()
                     this.getLyric()

@@ -143,7 +143,6 @@
             // 点击某个item，要进行数据设置和路由跳转
             selectItem(item)
             {
-                console.log(item.type)
                 if (item.type === TYPE_SINGER)
                 {
                     const singer = new Singer({
@@ -154,7 +153,6 @@
                         path: `/search/${singer.id}`
                     })
                     this.setSinger(singer)
-                    console.log(312)
                 } else
                 {
                     this.insertSong(item)
