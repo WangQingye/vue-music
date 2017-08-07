@@ -43,6 +43,7 @@
             hide()
             {
                 this.showFlag = false
+                console.log('12')
             },
             selectSuggest()
             {
