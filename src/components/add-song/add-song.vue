@@ -13,7 +13,7 @@
             <div class="shortcut" v-show="!query"></div>
             <div class="search-result" v-show="query">
                 <suggest :query="query"
-                         :showSing="false"
+                         :showSinger="false"
                          @select="saveSearch"
                          @listScroll="blurInput"
                 ></suggest>
