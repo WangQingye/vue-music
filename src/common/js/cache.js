@@ -10,6 +10,9 @@ const SEARCH_MAX_LENGTH = 15
 const PLAY_KEY = '__play__'
 const PLAY_MAX_LENGTH = 100
 
+const FAVORITE_KEY = '__favorite__'
+const FAVORITE_MAX_LENGTH = 100
+
 function insertArray (arr, val, compare, maxLen) {
     const index = arr.findIndex(compare)
     if (index === 0 || !val) return
@@ -25,6 +28,7 @@ function deleteFromArray (arr, compare) {
     const index = arr.findIndex(compare)
     if (index > -1)
     {
+        console.log('删除了第' + index + '个元素')
         arr.splice(index, 1)
     }
 }
@@ -78,4 +82,27 @@ export function deletePlayHistory (song) {
 export function clearPlayHistory () {
     storage.remove(PLAY_KEY)
     return []
+}
+
+export function saveFavorite (song) {
+    let songs = storage.get(FAVORITE_KEY, [])
+    insertArray(songs, song, (item) => {
+        return item.id === song.id
+    }, FAVORITE_MAX_LENGTH)
+    storage.set(FAVORITE_KEY, songs)
+    return songs
+}
+
+export function deleteFavorite (song) {
+    let songs = storage.get(FAVORITE_KEY, [])
+    deleteFromArray(songs, (item) => {
+        return item.id === song.id
+    })
+    console.log('delete', storage.set(FAVORITE_KEY, songs))
+    storage.set(FAVORITE_KEY, songs)
+    return songs
+}
+
+export function loadFavorite () {
+    return storage.get(FAVORITE_KEY, [])
 }
