@@ -50,7 +50,7 @@
     import Switches from 'src/base/switches/switches.vue'
     import Scroll from 'src/base/scroll/scroll.vue'
     import SongList from 'src/base/song-list/song-list.vue'
-    import Toptip from 'src/base/top-tip/top-tip.vue'
+    import TopTip from 'src/base/top-tip/top-tip.vue'
     import SearchList from 'src/base/search-list/search-list.vue'
     import Suggest from 'src/components/suggest/suggest.vue'
     import {searchMixin} from 'src/common/js/mixin'
@@ -82,7 +82,7 @@
                     if (this.currentIndex === 0) {
                         this.$refs.songList.refresh()
                     } else {
-                        this.$refs.searchList.refresh()
+                        this.$refs.searchList && this.$refs.searchList.refresh()
                     }
                 })
             },
@@ -98,13 +98,11 @@
             {
                 if (index !== 0) {
                     this.insertSong(new Song(song))
+                    this.showTip()
                 }
             },
             showTip() {
                 this.$refs.topTip.show()
-            },
-            hideTip() {
-                this.$refs.topTip.hide()
             },
             ...mapActions([
                 'insertSong'
@@ -116,7 +114,7 @@
             Scroll,
             SongList,
             SearchList,
-            Toptip,
+            TopTip,
             Suggest
         }
     }
