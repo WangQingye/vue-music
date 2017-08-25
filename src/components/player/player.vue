@@ -96,7 +96,7 @@
         </transition>
         <playlist ref="playList"></playlist>
         <audio :src="currentSong.url" ref="audio"
-               @canplay="ready"
+               @play="ready"
                @error="error"
                @timeupdate="updateTime"
                @ended="end"
@@ -247,6 +247,11 @@
             next()
             {
                 if (!this.songReady) return
+                if (this.playList.length === 1)
+                {
+                    this.loop()
+                    return
+                }
                 let index = this.currentIndex + 1
                 if (index === this.playList.length) index = 0
                 this.setCurrentIndex(index)
@@ -257,6 +262,11 @@
             prev()
             {
                 if (!this.songReady) return
+                if (this.playList.length === 1)
+                {
+                    this.loop()
+                    return
+                }
                 let index = this.currentIndex - 1
                 if (index === -1) index = this.playList.length
                 this.setCurrentIndex(index)
@@ -302,6 +312,7 @@
             {
                 console.log('lyric')
                 this.currentSong.getLyric().then((lyric) => {
+                    if (this.currentSong.lyric !== lyric) return
                     this.currentLyric = new Lyric(lyric, this.handleLyric)
                     console.log(this.currentLyric)
                     if (this.playing) this.currentLyric.play()
